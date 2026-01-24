@@ -1,6 +1,9 @@
 use anyhow::{Result, bail};
 use ck_models::{ModelConfig, ModelRegistry};
-use std::path::{Path, PathBuf};
+#[cfg(feature = "fastembed")]
+use std::path::Path;
+#[cfg(any(feature = "fastembed", feature = "mixedbread"))]
+use std::path::PathBuf;
 
 pub mod reranker;
 pub mod tokenizer;
@@ -25,6 +28,7 @@ pub trait Embedder: Send + Sync {
 
 pub type ModelDownloadCallback = Box<dyn Fn(&str) + Send + Sync>;
 
+#[cfg(any(feature = "fastembed", feature = "mixedbread"))]
 pub(crate) fn model_cache_root() -> Result<PathBuf> {
     let base = if let Some(cache_home) = std::env::var_os("XDG_CACHE_HOME") {
         PathBuf::from(cache_home).join("ck")
