@@ -52,9 +52,9 @@ jobs:
     - name: Build and Test (non-Windows)
       if: matrix.os != 'windows-latest'
       run: cargo hack test --each-feature --workspace
-    - name: Build and Test (Windows - skip ONNX features due to runtime library mismatch)
+    - name: Build and Test (Windows - skip ONNX crates due to runtime library mismatch)
       if: matrix.os == 'windows-latest'
-      run: cargo hack test --each-feature --workspace --exclude-features fastembed,mixedbread
+      run: cargo hack test --each-feature --workspace --exclude ck-embed --exclude-features fastembed,mixedbread
   msrv:
     name: "Check MSRV"
     runs-on: ubuntu-latest
