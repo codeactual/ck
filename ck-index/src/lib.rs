@@ -272,16 +272,16 @@ pub async fn index_directory(
             .resolve(model)
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
-        if let Some(existing_model) = &manifest.embedding_model {
-            if existing_model != &config.name {
-                return Err(anyhow::anyhow!(
-                    "Model mismatch: Index was created with '{}', but you're trying to use '{}'. \
+        if let Some(existing_model) = &manifest.embedding_model
+            && existing_model != &config.name
+        {
+            return Err(anyhow::anyhow!(
+                "Model mismatch: Index was created with '{}', but you're trying to use '{}'. \
                 Please run 'ck --clean {}' to remove the old index, then rerun with the new model.",
-                    existing_model,
-                    config.name,
-                    path.display()
-                ));
-            }
+                existing_model,
+                config.name,
+                path.display()
+            ));
         }
 
         manifest.embedding_model = Some(config.name.clone());
@@ -790,16 +790,16 @@ pub async fn smart_update_index_with_detailed_progress(
                 .map_err(|e| anyhow::anyhow!(e.to_string()))?
         };
 
-        if let Some(existing_model) = &manifest.embedding_model {
-            if existing_model != &resolved.1.name {
-                return Err(anyhow::anyhow!(
-                    "Model mismatch: Index was created with '{}', but you're trying to use '{}'. \
+        if let Some(existing_model) = &manifest.embedding_model
+            && existing_model != &resolved.1.name
+        {
+            return Err(anyhow::anyhow!(
+                "Model mismatch: Index was created with '{}', but you're trying to use '{}'. \
                     Please run 'ck --clean .' to remove the old index, then 'ck --index --model {}' to rebuild with the new model.",
-                    existing_model,
-                    resolved.1.name,
-                    model.unwrap_or("default")
-                ));
-            }
+                existing_model,
+                resolved.1.name,
+                model.unwrap_or("default")
+            ));
         }
 
         manifest.embedding_model = Some(resolved.1.name.clone());

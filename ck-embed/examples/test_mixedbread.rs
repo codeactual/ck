@@ -24,7 +24,7 @@ fn run_example() {
     // Test 1: Model Registry Resolution
     println!("1. Testing Model Registry Resolution");
     println!("   Checking if 'mxbai-xsmall' alias resolves...");
-    
+
     let registry = ModelRegistry::default();
     match registry.resolve(Some("mxbai-xsmall")) {
         Ok((alias, config)) => {
@@ -64,17 +64,35 @@ fn run_example() {
             match embedder.embed(&test_texts) {
                 Ok(embeddings) => {
                     println!("   ✅ Successfully generated embeddings");
-                    println!("      Shape: {} embeddings of {} dimensions", embeddings.len(), embeddings[0].len());
-                    
+                    println!(
+                        "      Shape: {} embeddings of {} dimensions",
+                        embeddings.len(),
+                        embeddings[0].len()
+                    );
+
                     // Verify dimensions
-                    assert_eq!(embeddings.len(), test_texts.len(), "Should have one embedding per text");
-                    assert_eq!(embeddings[0].len(), 384, "Mixedbread xsmall should produce 384-dim vectors");
-                    
+                    assert_eq!(
+                        embeddings.len(),
+                        test_texts.len(),
+                        "Should have one embedding per text"
+                    );
+                    assert_eq!(
+                        embeddings[0].len(),
+                        384,
+                        "Mixedbread xsmall should produce 384-dim vectors"
+                    );
+
                     // Check normalization (L2 norm should be ~1.0)
                     for (i, emb) in embeddings.iter().enumerate() {
                         let norm: f32 = emb.iter().map(|x| x * x).sum::<f32>().sqrt();
-                        println!("      Embedding {} L2 norm: {:.6} (should be ~1.0)", i, norm);
-                        assert!((norm - 1.0).abs() < 0.01, "Embeddings should be L2-normalized");
+                        println!(
+                            "      Embedding {} L2 norm: {:.6} (should be ~1.0)",
+                            i, norm
+                        );
+                        assert!(
+                            (norm - 1.0).abs() < 0.01,
+                            "Embeddings should be L2-normalized"
+                        );
                     }
                 }
                 Err(e) => {
@@ -93,7 +111,7 @@ fn run_example() {
     // Test 4: Reranker Registry Resolution
     println!("\n4. Testing Reranker Registry Resolution");
     println!("   Checking if 'mxbai' reranker alias resolves...");
-    
+
     let rerank_registry = RerankModelRegistry::default();
     match rerank_registry.resolve(Some("mxbai")) {
         Ok((alias, config)) => {
@@ -132,8 +150,9 @@ fn run_example() {
                     println!("   ✅ Successfully reranked documents");
                     println!("      Results (sorted by score):");
                     for (i, result) in results.iter().enumerate() {
-                        println!("      {}. Score: {:.4} | Doc: {}", 
-                            i + 1, 
+                        println!(
+                            "      {}. Score: {:.4} | Doc: {}",
+                            i + 1,
                             result.score,
                             if result.document.len() > 60 {
                                 &result.document[..60]
@@ -142,7 +161,7 @@ fn run_example() {
                             }
                         );
                     }
-                    
+
                     // Verify results are sorted by score (descending)
                     let scores: Vec<f32> = results.iter().map(|r| r.score).collect();
                     let sorted_scores: Vec<f32> = {
@@ -150,12 +169,17 @@ fn run_example() {
                         s.sort_by(|a, b| b.partial_cmp(a).unwrap());
                         s
                     };
-                    assert_eq!(scores, sorted_scores, "Results should be sorted by score descending");
-                    
+                    assert_eq!(
+                        scores, sorted_scores,
+                        "Results should be sorted by score descending"
+                    );
+
                     // Verify scores are in valid range [0, 1]
                     for result in &results {
-                        assert!(result.score >= 0.0 && result.score <= 1.0, 
-                            "Rerank scores should be in [0, 1] range");
+                        assert!(
+                            result.score >= 0.0 && result.score <= 1.0,
+                            "Rerank scores should be in [0, 1] range"
+                        );
                     }
                 }
                 Err(e) => {
@@ -173,4 +197,3 @@ fn run_example() {
 
     println!("\n=== All Tests Passed! ===");
 }
-

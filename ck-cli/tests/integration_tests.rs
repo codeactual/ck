@@ -882,6 +882,11 @@ fn test_no_ckignore_flag_disables_hierarchical_ignore() {
     assert!(
         stdout.contains("test.txt") || stdout.contains("nested.txt"),
         "Should find .txt files even with .ckignore active"
+    );
+}
+
+#[test]
+#[serial]
 #[ignore] // Requires models to be downloaded - run with: CK_MIXEDBREAD_MODELS_READY=1 cargo test -- --ignored
 fn test_mixedbread_index_and_search() {
     // Skip if models aren't ready (set CK_MIXEDBREAD_MODELS_READY=1 to enable)
@@ -926,13 +931,15 @@ fn test_mixedbread_index_and_search() {
     );
 
     // Verify index was created
-    assert!(temp_dir.path().join(".ck").exists(), "Index directory should exist");
+    assert!(
+        temp_dir.path().join(".ck").exists(),
+        "Index directory should exist"
+    );
 
     // Check manifest contains Mixedbread model
     let manifest_path = temp_dir.path().join(".ck").join("manifest.json");
     let manifest_data = fs::read(&manifest_path).expect("manifest should exist");
-    let manifest: serde_json::Value =
-        serde_json::from_slice(&manifest_data).expect("valid json");
+    let manifest: serde_json::Value = serde_json::from_slice(&manifest_data).expect("valid json");
     let embedding_model = manifest
         .get("embedding_model")
         .and_then(|v| v.as_str())
@@ -954,13 +961,7 @@ fn test_mixedbread_index_and_search() {
 
     // Test semantic search with Mixedbread
     let output = Command::new(ck_binary())
-        .args([
-            "--sem",
-            "error handling",
-            "--model",
-            "mxbai-xsmall",
-            ".",
-        ])
+        .args(["--sem", "error handling", "--model", "mxbai-xsmall", "."])
         .current_dir(temp_dir.path())
         .output()
         .expect("Failed to run ck semantic search with Mixedbread");
@@ -1063,8 +1064,7 @@ fn test_switch_model_to_mixedbread() {
     // Verify manifest now has Mixedbread model
     let manifest_path = temp_dir.path().join(".ck").join("manifest.json");
     let manifest_data = fs::read(&manifest_path).expect("manifest should exist");
-    let manifest: serde_json::Value =
-        serde_json::from_slice(&manifest_data).expect("valid json");
+    let manifest: serde_json::Value = serde_json::from_slice(&manifest_data).expect("valid json");
     let embedding_model = manifest
         .get("embedding_model")
         .and_then(|v| v.as_str())

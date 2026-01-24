@@ -140,7 +140,6 @@ pub enum ParseableLanguage {
     Dart,
 
     Elixir,
-
 }
 
 impl std::fmt::Display for ParseableLanguage {
@@ -159,7 +158,6 @@ impl std::fmt::Display for ParseableLanguage {
             ParseableLanguage::Dart => "dart",
 
             ParseableLanguage::Elixir => "elixir",
-
         };
         write!(f, "{}", name)
     }
@@ -383,7 +381,6 @@ pub(crate) fn tree_sitter_language(language: ParseableLanguage) -> Result<tree_s
         ParseableLanguage::Dart => unreachable!("Handled above via early return"),
 
         ParseableLanguage::Elixir => tree_sitter_elixir::LANGUAGE,
-
     };
 
     Ok(ts_language.into())
@@ -1150,7 +1147,6 @@ fn display_name_for_node(
         ParseableLanguage::Elixir => {
             // Elixir names can be aliases (module names) or atoms/identifiers
             find_identifier(node, source, &["alias", "identifier", "atom"])
-
         }
     }
 }
@@ -1271,7 +1267,6 @@ fn is_method_context(node: tree_sitter::Node<'_>, language: ParseableLanguage) -
         ParseableLanguage::Dart => ancestor_has_kind(node, DART_CONTAINERS),
 
         ParseableLanguage::Elixir => false, // Elixir doesn't have class-based methods
-
     }
 }
 
@@ -1614,8 +1609,14 @@ pub mod utils {
 pub struct Foo {}
 "#;
         let chunks = chunk_language(rust_code, ParseableLanguage::Rust).unwrap();
-        let struct_chunk = chunks.iter().find(|c| c.text.contains("struct Foo")).unwrap();
-        assert!(struct_chunk.text.contains("/// Doc comment"), "Doc comment should be attached");
+        let struct_chunk = chunks
+            .iter()
+            .find(|c| c.text.contains("struct Foo"))
+            .unwrap();
+        assert!(
+            struct_chunk.text.contains("/// Doc comment"),
+            "Doc comment should be attached"
+        );
     }
 
     #[test]

@@ -94,7 +94,6 @@ fn builtin_query(language: ParseableLanguage) -> Option<&'static str> {
         ParseableLanguage::Dart => Some(include_str!("../queries/dart/tags.scm")),
 
         ParseableLanguage::Elixir => Some(include_str!("../queries/elixir/tags.scm")),
-
     }
 }
 
