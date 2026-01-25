@@ -133,10 +133,10 @@ jobs:
           elif [ "${{ matrix.os }}" = "macos-latest" ]; then
             # macOS approach - use system OpenSSL to avoid cross-compilation issues
             if [ "${{ matrix.target }}" = "x86_64-apple-darwin" ]; then
-              # macOS x86_64 (Intel): Build without mixedbread feature
-              # ort-sys doesn't provide prebuilt binaries for x86_64-apple-darwin
-              # Intel Mac users get fastembed-only semantic search
-              ${{ env.CARGO_CMD }} build --locked --release --target ${{ matrix.target }} --package ck-search --no-default-features --features=fastembed
+              # macOS x86_64 (Intel): Build without ANY embedding features
+              # Both fastembed and mixedbread depend on ort, which doesn't have prebuilt binaries for x86_64-apple-darwin
+              # Intel Mac users get regex/lexical search only (no semantic search)
+              ${{ env.CARGO_CMD }} build --locked --release --target ${{ matrix.target }} --package ck-search --no-default-features
             else
               # macOS ARM64 (Apple Silicon): Full feature set
               ${{ env.CARGO_CMD }} build --locked --release --target ${{ matrix.target }} --package ck-search
